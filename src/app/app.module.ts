@@ -9,6 +9,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MaterialModule } from './modules/material.module';
 import { MoviesComponent } from './pages/movies/movies.component';
+import { MovieEffects } from './state/movie.effects';
+import { movieReducer } from './state/movie.reducers';
 
 @NgModule({
   declarations: [
@@ -21,8 +23,8 @@ import { MoviesComponent } from './pages/movies/movies.component';
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
-    StoreModule.forRoot({}, {}),
-    EffectsModule.forRoot([])
+    StoreModule.forRoot({ movies: movieReducer }),
+    EffectsModule.forRoot([MovieEffects])
   ],
   providers: [
     provideAnimationsAsync(),
