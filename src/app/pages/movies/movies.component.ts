@@ -18,19 +18,19 @@ export class MoviesComponent implements OnInit {
 
   public searchControl: FormControl = new FormControl();
 
-  constructor(private _store: Store<MovieState>) { }
+  constructor(private _store: Store<{ movies: MovieState }>) { }
 
   ngOnInit(): void {
     this._store
       .pipe(
-        select(state => state.movies)
+        select(state => state.movies.movies)
       )
       .subscribe({
         next: movies => {
           console.log(movies);
           this.moviesSubject.next(movies)
         }
-      })
+      });
 
 
     this.searchControl.valueChanges
