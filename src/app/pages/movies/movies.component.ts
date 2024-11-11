@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
+import { Movie } from '../../models/movie.model';
 import { MovieService } from '../../services/movie.service';
 
 @Component({
@@ -9,7 +10,7 @@ import { MovieService } from '../../services/movie.service';
   styleUrl: './movies.component.scss'
 })
 export class MoviesComponent implements OnInit {
-  movies: any[] = []
+  movies: Movie[] = []
   searchControl: FormControl = new FormControl();
 
   constructor(private _movieService: MovieService) { }
@@ -25,10 +26,16 @@ export class MoviesComponent implements OnInit {
   }
 
   private _search(query: string) {
-    this._movieService.search(query).subscribe({
-      next: (response: any) => {
-        this.movies = response.Search ?? [];
-      }
-    });
+    this._movieService
+      .search(query)
+      .subscribe({
+        next: response => {
+          if (response.Response === 'True') {
+            this.movies = response.Search;
+          } else {
+            this.movies = [];
+          }
+        }
+      });
   }
 }
