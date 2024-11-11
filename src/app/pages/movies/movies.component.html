@@ -1,0 +1,21 @@
+<mat-form-field>
+    <input
+        matInput
+        [formControl]="searchControl"
+        placeholder="Search Movies"
+    >
+</mat-form-field>
+
+<cdk-virtual-scroll-viewport
+    itemSize="50"
+    class="viewport"
+    [style.height.px]="400"
+>
+    <div
+        *cdkVirtualFor="let movie of movies"
+        class="movie-item"
+    >
+        <h4>{{ movie.Title }}</h4>
+        <p>{{ movie.Year }}</p>
+    </div>
+</cdk-virtual-scroll-viewport>
