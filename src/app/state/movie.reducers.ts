@@ -3,32 +3,55 @@ import { Movie } from '../models/movie.model';
 import * as MovieActions from './movie.actions';
 
 export interface MovieState {
-  history: string[]; // search history
   query: string; // current search query
   movies: Movie[], // current search results
+  totalResults: number;
+  loading: boolean;
+  hasMore: boolean;
+  history: string[]; // search history
+  page: number;
   error: string | null;
 }
 
 export const initialState: MovieState = {
-  history: [],
   query: '',
   movies: [],
+  totalResults: 0,
+  loading: false,
+  hasMore: false,
+  history: [],
   error: null,
+  page: 1,
 };
 
 export const movieReducer = createReducer(
   initialState,
-  on(MovieActions.searchMovies, (state, { query }) => ({ ...state, query })),
-  on(MovieActions.searchMoviesSuccess, (state, { query, results }) => {
-    if (results.length) {
-      return {
-        ...state,
-        history: state.history.includes(query) ? state.history : [...state.history, query],
-        movies: results,
-      };
-    }
+  on(MovieActions.searchMovies, (state, { query, page }) => ({
+    ...state,
+    query,
+    loading: true,
+    page,
+  })),
 
-    return { ...state, movies: results };
+  on(MovieActions.searchMoviesSuccess, (state, { query, results, totalResults }) => {
+    let movies = state.page === 1 ? results : state.movies.concat(results),
+      loading = false,
+      hasMore = movies.length < totalResults,
+      history = (results.length && !state.history.includes(query)) ? [...state.history, query] : state.history;
+
+    return {
+      ...state,
+      movies,
+      totalResults,
+      loading,
+      hasMore,
+      history,
+    };
   }),
-  on(MovieActions.searchMoviesFailure, (state, { error }) => ({ ...state, error }))
+
+  on(MovieActions.searchMoviesFailure, (state, { error }) => ({
+    ...state,
+    error,
+    loading: false,
+  }))
 );

@@ -1,4 +1,4 @@
-<div class="page">
+<div class="container">
     <h4>Search Movies</h4>
     <mat-form-field class="full-width">
         <input
@@ -12,25 +12,58 @@
             #auto="matAutocomplete"
         >
             @for (option of filteredOptions | async; track option) {
-            <mat-option [value]="option">{{option}}</mat-option>
+            <mat-option [value]="option">{{ option }}</mat-option>
             }
         </mat-autocomplete>
     </mat-form-field>
 
     <h4>Search Results:</h4>
-    <mat-list role="list">
+    <mat-list
+        role="list"
+        class="movie-list"
+    >
         <cdk-virtual-scroll-viewport
             itemSize="5"
             class="viewport"
         >
-            <div
-                *cdkVirtualFor="let movie of movies$ | async"
+            <mat-list-item
+                *cdkVirtualFor="let movie of movies$ | async; trackBy: trackByFn"
+                role="listitem"
                 class="movie-item"
             >
-                <mat-list-item role="listitem">
-                    <span class="item-display-label">{{movie.Title}} ({{movie.Year}})</span>
-                </mat-list-item>
-            </div>
+                <div class="grid-container movie-item-containter">
+                    <div class="movie-poster">
+                        <img
+                            [src]="movie.Poster"
+                            [alt]="movie.Title"
+                        />
+                    </div>
+                    <div class="movie-information">
+                        <span class="movie-title text-bold">{{ movie.Title }}</span>
+                        <br />
+                        <span class="movie-year">{{ movie.Year }}</span>
+                    </div>
+                </div>
+            </mat-list-item>
         </cdk-virtual-scroll-viewport>
     </mat-list>
+
+    <div class="content-footer grid-container">
+        <div class="search-result-information">
+            @if ((movies$ | async)?.length) {
+            <span class="text-italic">Displaying {{ (movies$ | async)?.length }} of {{ (totalResults | async) }}
+                results.</span>
+            }
+        </div>
+
+        <div class="button-container">
+            @if (hasMore$ | async) {
+            <button
+                mat-flat-button
+                (click)="onLoadMoreClick()"
+                [disabled]="loading$ | async"
+            >Load more</button>
+            }
+        </div>
+    </div>
 </div>
