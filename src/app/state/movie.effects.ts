@@ -14,7 +14,7 @@ export class MovieEffects {
         action => this._movieService
           .search(action.query)
           .pipe(
-            map(response => MovieActions.searchMoviesSuccess({ movies: response.Search })),
+            map(response => MovieActions.searchMoviesSuccess({ query: action.query, results: response.Search || [] })),
             catchError(error => of(MovieActions.searchMoviesFailure({ error: error.message })))
           )
       )

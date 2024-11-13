@@ -3,20 +3,32 @@ import { Movie } from '../models/movie.model';
 import * as MovieActions from './movie.actions';
 
 export interface MovieState {
-  movies: Movie[];
-  searchQuery: string;
-  error: string;
+  history: string[]; // search history
+  query: string; // current search query
+  movies: Movie[], // current search results
+  error: string | null;
 }
 
 export const initialState: MovieState = {
+  history: [],
+  query: '',
   movies: [],
-  searchQuery: '',
-  error: ''
+  error: null,
 };
 
 export const movieReducer = createReducer(
   initialState,
-  on(MovieActions.searchMovies, (state, { query }) => ({ ...state, searchQuery: query })),
-  on(MovieActions.searchMoviesSuccess, (state, { movies }) => ({ ...state, movies })),
+  on(MovieActions.searchMovies, (state, { query }) => ({ ...state, query })),
+  on(MovieActions.searchMoviesSuccess, (state, { query, results }) => {
+    if (results.length) {
+      return {
+        ...state,
+        history: state.history.includes(query) ? state.history : [...state.history, query],
+        movies: results,
+      };
+    }
+
+    return { ...state, movies: results };
+  }),
   on(MovieActions.searchMoviesFailure, (state, { error }) => ({ ...state, error }))
 );

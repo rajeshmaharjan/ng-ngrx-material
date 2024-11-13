@@ -23,7 +23,7 @@ import { movieReducer } from './state/movie.reducers';
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
-    StoreModule.forRoot({ movies: movieReducer }),
+    StoreModule.forRoot({ movieSearch: movieReducer }),
     EffectsModule.forRoot([MovieEffects])
   ],
   providers: [
