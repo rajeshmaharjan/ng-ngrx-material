@@ -1,21 +1,36 @@
-<mat-form-field>
-    <input
-        matInput
-        [formControl]="searchControl"
-        placeholder="Search Movies"
-    >
-</mat-form-field>
+<div class="page">
+    <h4>Search Movies</h4>
+    <mat-form-field class="full-width">
+        <input
+            matInput
+            [formControl]="searchControl"
+            [matAutocomplete]="auto"
+            placeholder="Search Movies"
+        >
+        <mat-autocomplete
+            autoActiveFirstOption
+            #auto="matAutocomplete"
+        >
+            @for (option of filteredOptions | async; track option) {
+            <mat-option [value]="option">{{option}}</mat-option>
+            }
+        </mat-autocomplete>
+    </mat-form-field>
 
-<cdk-virtual-scroll-viewport
-    itemSize="50"
-    class="viewport"
-    [style.height.px]="400"
->
-    <div
-        *cdkVirtualFor="let movie of movies"
-        class="movie-item"
-    >
-        <h4>{{ movie.Title }}</h4>
-        <p>{{ movie.Year }}</p>
-    </div>
-</cdk-virtual-scroll-viewport>
+    <h4>Search Results:</h4>
+    <mat-list role="list">
+        <cdk-virtual-scroll-viewport
+            itemSize="5"
+            class="viewport"
+        >
+            <div
+                *cdkVirtualFor="let movie of movies$ | async"
+                class="movie-item"
+            >
+                <mat-list-item role="listitem">
+                    <span class="item-display-label">{{movie.Title}} ({{movie.Year}})</span>
+                </mat-list-item>
+            </div>
+        </cdk-virtual-scroll-viewport>
+    </mat-list>
+</div>

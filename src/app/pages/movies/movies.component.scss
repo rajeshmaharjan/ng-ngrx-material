@@ -1,0 +1,20 @@
+.page {
+    width: 400px;
+    margin: 25px auto 0 auto;
+    padding: 20px;
+    box-shadow: 5px 5px 5px 5px #888888;
+
+    .full-width {
+        width: 100%;
+    }
+
+    .viewport {
+        height: 250px;
+
+        .movie-item {
+            .item-display-label {
+                text-overflow: ellipsis;
+            }
+        }
+    }
+}
