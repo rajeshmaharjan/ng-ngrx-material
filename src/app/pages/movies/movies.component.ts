@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { select, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
 import { Movie } from '../../models/movie.model';
 import { searchMovies } from '../../state/movie.actions';
-import { MovieState } from '../../state/movie.reducers';
-import { selectHasMore, selectLoading, selectSearchResults, selectTotalResults } from '../../state/movie.selectors';
+import { selectHasMore, selectLoading, selectSearchHistory, selectSearchResults, selectTotalResults } from '../../state/movie.selectors';
 
 @Component({
   selector: 'app-movies',
@@ -21,21 +20,16 @@ export class MoviesComponent implements OnInit {
 
   loading$: Observable<boolean> = this._store.select(selectLoading);
   movies$: Observable<Movie[]> = this._store.select(selectSearchResults);
+  searchHistory$: Observable<string[]> = this._store.select(selectSearchHistory);
   hasMore$: Observable<boolean> = this._store.select(selectHasMore);
   totalResults: Observable<number> = this._store.select(selectTotalResults);
 
   public currentPage: number = 1;
 
-  constructor(private _store: Store<{ movieSearch: MovieState }>) { }
+  constructor(private _store: Store) { }
 
   ngOnInit(): void {
-    this._store
-      .pipe(
-        select(state => state.movieSearch.history)
-      )
-      .subscribe({
-        next: history => (this._options = history)
-      });
+    this.searchHistory$.subscribe(history => this._options = history);
 
     this.filteredOptions = this.searchControl.valueChanges.pipe(
       startWith(''),
