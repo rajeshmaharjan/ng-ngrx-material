@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
-import { BehaviorSubject, Observable, } from 'rxjs';
+import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
 import { Movie } from '../../models/movie.model';
 import { searchMovies } from '../../state/movie.actions';
 import { MovieState } from '../../state/movie.reducers';
+import { selectHasMore, selectLoading, selectSearchResults, selectTotalResults } from '../../state/movie.selectors';
 
 @Component({
   selector: 'app-movies',
@@ -13,32 +14,27 @@ import { MovieState } from '../../state/movie.reducers';
   styleUrl: './movies.component.scss'
 })
 export class MoviesComponent implements OnInit {
-  private moviesSubject = new BehaviorSubject<Movie[]>([]);
-  movies$: Observable<Movie[]> = this.moviesSubject.asObservable();
-
   private _options: string[] = [];
   public filteredOptions!: Observable<string[]>;
 
   public searchControl: FormControl = new FormControl();
+
+  loading$: Observable<boolean> = this._store.select(selectLoading);
+  movies$: Observable<Movie[]> = this._store.select(selectSearchResults);
+  hasMore$: Observable<boolean> = this._store.select(selectHasMore);
+  totalResults: Observable<number> = this._store.select(selectTotalResults);
+
+  public currentPage: number = 1;
 
   constructor(private _store: Store<{ movieSearch: MovieState }>) { }
 
   ngOnInit(): void {
     this._store
       .pipe(
-        select(state => {
-          console.log(state);
-          return {
-            history: state.movieSearch.history,
-            movies: state.movieSearch.movies
-          };
-        })
+        select(state => state.movieSearch.history)
       )
       .subscribe({
-        next: ({ history, movies }) => {
-          this._options = history;
-          this.moviesSubject.next(movies);
-        }
+        next: history => (this._options = history)
       });
 
     this.filteredOptions = this.searchControl.valueChanges.pipe(
@@ -53,8 +49,16 @@ export class MoviesComponent implements OnInit {
         filter(query => query.trim().length > 2),
       )
       .subscribe({
-        next: query => this._store.dispatch(searchMovies({ query }))
+        next: query => this._store.dispatch(searchMovies({ query: query, page: 1 }))
       });
+  }
+
+  public trackByFn(index: number, item: Movie): number {
+    return index;
+  }
+
+  public onLoadMoreClick(): void {
+    this._store.dispatch(searchMovies({ query: this.searchControl.value, page: ++this.currentPage }));
   }
 
   private _filter(value: string): string[] {

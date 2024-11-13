@@ -12,9 +12,15 @@ export class MovieEffects {
       ofType(MovieActions.searchMovies),
       switchMap(
         action => this._movieService
-          .search(action.query)
+          .search(action.query, action.page)
           .pipe(
-            map(response => MovieActions.searchMoviesSuccess({ query: action.query, results: response.Search || [] })),
+            map(
+              response => MovieActions.searchMoviesSuccess({
+                query: action.query,
+                results: response.Search || [],
+                totalResults: Number(response.totalResults ?? 0)
+              })
+            ),
             catchError(error => of(MovieActions.searchMoviesFailure({ error: error.message })))
           )
       )
