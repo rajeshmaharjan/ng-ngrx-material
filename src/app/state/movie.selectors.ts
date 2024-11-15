@@ -27,3 +27,8 @@ export const selectHasMore = createSelector(
   selectMovieSearchState,
   state => state.hasMore
 );
+
+export const selectCurrentPage = createSelector(
+  selectMovieSearchState,
+  state => state.page
+);

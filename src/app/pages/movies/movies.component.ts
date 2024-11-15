@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
 import { Movie } from '../../models/movie.model';
 import { searchMovies } from '../../state/movie.actions';
-import { selectHasMore, selectLoading, selectSearchHistory, selectSearchResults, selectTotalResults } from '../../state/movie.selectors';
+import { selectCurrentPage, selectHasMore, selectLoading, selectSearchHistory, selectSearchResults, selectTotalResults } from '../../state/movie.selectors';
 
 @Component({
   selector: 'app-movies',
@@ -26,13 +26,15 @@ export class MoviesComponent implements OnInit {
   searchHistory$: Observable<string[]> = this._store.select(selectSearchHistory);
   hasMore$: Observable<boolean> = this._store.select(selectHasMore);
   totalResults: Observable<number> = this._store.select(selectTotalResults);
+  currentPage$: Observable<number> = this._store.select(selectCurrentPage);
 
-  public currentPage: number = 1;
+  public currentPage!: number;
 
   constructor(private _store: Store) { }
 
   ngOnInit(): void {
     this.searchHistory$.subscribe(history => this._options = history);
+    this.currentPage$.subscribe(page => this.currentPage = page);
 
     this.filteredOptions = this.searchControl.valueChanges.pipe(
       startWith(''),
@@ -58,7 +60,7 @@ export class MoviesComponent implements OnInit {
   }
 
   public onLoadMoreClick(): void {
-    this._store.dispatch(searchMovies({ query: this.searchControl.value, page: ++this.currentPage }));
+    this._store.dispatch(searchMovies({ query: this.searchControl.value, page: this.currentPage + 1 }));
   }
 
   private _filter(value: string): string[] {
