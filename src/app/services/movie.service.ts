@@ -7,7 +7,7 @@ import { MovieSearchResponse } from '../models/movie-search-response.model';
   providedIn: 'root'
 })
 export class MovieService {
-  protected readonly apiPath: string = 'http://www.omdbapi.com';
+  protected readonly apiPath: string = 'https://www.omdbapi.com';
   protected readonly apiKey: string = 'd81ddffc';
 
   constructor(private _http: HttpClient) { }
