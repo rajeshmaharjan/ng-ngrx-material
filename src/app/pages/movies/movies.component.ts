@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -13,6 +14,8 @@ import { selectHasMore, selectLoading, selectSearchHistory, selectSearchResults,
   styleUrl: './movies.component.scss'
 })
 export class MoviesComponent implements OnInit {
+  @ViewChild(CdkVirtualScrollViewport) virtualScroll!: CdkVirtualScrollViewport;
+
   private _options: string[] = [];
   public filteredOptions!: Observable<string[]>;
 
@@ -43,7 +46,10 @@ export class MoviesComponent implements OnInit {
         filter(query => query.trim().length > 2),
       )
       .subscribe({
-        next: query => this._store.dispatch(searchMovies({ query: query, page: 1 }))
+        next: query => {
+          this.virtualScroll.scrollToIndex(0);
+          this._store.dispatch(searchMovies({ query: query, page: 1 }))
+        }
       });
   }
 
