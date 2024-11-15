@@ -1,58 +1,62 @@
-<div class="container">
-    <h4>Search Movies</h4>
-    <mat-form-field class="full-width">
-        <input
-            matInput
-            [formControl]="searchControl"
-            [matAutocomplete]="auto"
-            placeholder="Search Movies"
-        >
-        <mat-autocomplete
-            autoActiveFirstOption
-            #auto="matAutocomplete"
-        >
-            @for (option of filteredOptions | async; track option) {
-            <mat-option [value]="option">{{ option }}</mat-option>
-            }
-        </mat-autocomplete>
-    </mat-form-field>
-
-    <h4>Search Results:</h4>
-    <mat-list
-        role="list"
-        class="movie-list"
-    >
-        <cdk-virtual-scroll-viewport
-            itemSize="5"
-            class="viewport"
-        >
-            <mat-list-item
-                *cdkVirtualFor="let movie of movies$ | async; trackBy: trackByFn"
-                role="listitem"
-                class="movie-item"
+<div class="content">
+    <div class="content-header">
+        <h4>Search Movies</h4>
+        <mat-form-field class="full-width">
+            <input
+                matInput
+                [formControl]="searchControl"
+                [matAutocomplete]="auto"
+                placeholder="Search Movies"
             >
-                <div class="grid-container movie-item-containter">
-                    <div class="movie-poster">
-                        <img
-                            [src]="movie.Poster"
-                            [alt]="movie.Title"
-                        />
+            <mat-autocomplete
+                autoActiveFirstOption
+                #auto="matAutocomplete"
+            >
+                @for (option of filteredOptions | async; track option) {
+                <mat-option [value]="option">{{ option }}</mat-option>
+                }
+            </mat-autocomplete>
+        </mat-form-field>
+    </div>
+
+    <div class="content-body">
+        <h4>Search Results:</h4>
+        <mat-list
+            role="list"
+            class="movie-list"
+        >
+            <cdk-virtual-scroll-viewport
+                itemSize="100"
+                class="viewport"
+                #virtualScroll
+            >
+                <mat-list-item
+                    *cdkVirtualFor="let movie of movies$ | async; trackBy: trackByFn"
+                    role="listitem"
+                    class="movie-item"
+                >
+                    <div class="grid-container movie-item-containter">
+                        <div class="movie-poster">
+                            <img
+                                [src]="movie.Poster"
+                                [alt]="movie.Title"
+                            />
+                        </div>
+                        <div class="movie-information">
+                            <span class="movie-title text-bold">{{ movie.Title }}</span>
+                            <br />
+                            <span class="movie-year">{{ movie.Year }}</span>
+                        </div>
                     </div>
-                    <div class="movie-information">
-                        <span class="movie-title text-bold">{{ movie.Title }}</span>
-                        <br />
-                        <span class="movie-year">{{ movie.Year }}</span>
-                    </div>
-                </div>
-            </mat-list-item>
-        </cdk-virtual-scroll-viewport>
-    </mat-list>
+                </mat-list-item>
+            </cdk-virtual-scroll-viewport>
+        </mat-list>
+    </div>
 
     <div class="content-footer grid-container">
         <div class="search-result-information">
             @if ((movies$ | async)?.length) {
-            <span class="text-italic">Displaying {{ (movies$ | async)?.length }} of {{ (totalResults | async) }}
-                results.</span>
+            <span class="text-italic">Displaying {{ (movies$ | async)?.length }} of {{ (totalResults | async) }} results.</span>
             }
         </div>
 

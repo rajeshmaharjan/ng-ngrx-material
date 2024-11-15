@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, startWith } from 'rxjs/operators';
 import { Movie } from '../../models/movie.model';
 import { searchMovies } from '../../state/movie.actions';
-import { selectHasMore, selectLoading, selectSearchHistory, selectSearchResults, selectTotalResults } from '../../state/movie.selectors';
+import { selectCurrentPage, selectHasMore, selectLoading, selectSearchHistory, selectSearchResults, selectTotalResults } from '../../state/movie.selectors';
 
 @Component({
   selector: 'app-movies',
@@ -13,6 +14,8 @@ import { selectHasMore, selectLoading, selectSearchHistory, selectSearchResults,
   styleUrl: './movies.component.scss'
 })
 export class MoviesComponent implements OnInit {
+  @ViewChild(CdkVirtualScrollViewport) virtualScroll!: CdkVirtualScrollViewport;
+
   private _options: string[] = [];
   public filteredOptions!: Observable<string[]>;
 
@@ -23,13 +26,15 @@ export class MoviesComponent implements OnInit {
   searchHistory$: Observable<string[]> = this._store.select(selectSearchHistory);
   hasMore$: Observable<boolean> = this._store.select(selectHasMore);
   totalResults: Observable<number> = this._store.select(selectTotalResults);
+  currentPage$: Observable<number> = this._store.select(selectCurrentPage);
 
-  public currentPage: number = 1;
+  public currentPage!: number;
 
   constructor(private _store: Store) { }
 
   ngOnInit(): void {
     this.searchHistory$.subscribe(history => this._options = history);
+    this.currentPage$.subscribe(page => this.currentPage = page);
 
     this.filteredOptions = this.searchControl.valueChanges.pipe(
       startWith(''),
@@ -43,7 +48,10 @@ export class MoviesComponent implements OnInit {
         filter(query => query.trim().length > 2),
       )
       .subscribe({
-        next: query => this._store.dispatch(searchMovies({ query: query, page: 1 }))
+        next: query => {
+          this.virtualScroll.scrollToIndex(0);
+          this._store.dispatch(searchMovies({ query: query, page: 1 }))
+        }
       });
   }
 
@@ -52,7 +60,7 @@ export class MoviesComponent implements OnInit {
   }
 
   public onLoadMoreClick(): void {
-    this._store.dispatch(searchMovies({ query: this.searchControl.value, page: ++this.currentPage }));
+    this._store.dispatch(searchMovies({ query: this.searchControl.value, page: this.currentPage + 1 }));
   }
 
   private _filter(value: string): string[] {

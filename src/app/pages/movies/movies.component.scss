@@ -1,37 +1,40 @@
-.container {
+.content {
     width: 600px;
     margin: 0 auto;
     padding: 20px;
-    box-shadow: 5px 5px 5px 5px #888888;
+    box-shadow: 0 0 5px 10px #888888;
     border-radius: 10px;
 
-    .movie-list {
-        .viewport {
-            height: 300px;
+    .content-body {
+        .movie-list {
+            .viewport {
+                height: 300px;
 
-            .movie-item {
-                height: 100px;
+                .movie-item {
+                    height: 100px;
 
-                .movie-item-containter {
-                    margin-top: 10px;
-                    grid-template-columns: 75px auto;
+                    .movie-item-containter {
+                        margin-top: 10px;
+                        grid-template-columns: 75px auto;
 
-                    .movie-poster {
-                        grid-column: 1;
-                        grid-row: 1;
+                        .movie-poster {
+                            grid-column: 1;
+                            grid-row: 1;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
 
-                        img {
-                            width: 65px;
+                            img {
+                                width: 65px;
+                            }
                         }
-                    }
 
-                    .movie-information {
-                        grid-column: 2;
-                        grid-row: 1;
-
-                        align-content: center;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
+                        .movie-information {
+                            grid-column: 2;
+                            grid-row: 1;
+                            padding-top: 10px;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
                     }
                 }
             }
