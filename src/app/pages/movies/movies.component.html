@@ -21,54 +21,40 @@
 
     <div class="content-body">
         <h4>Search Results:</h4>
-        <mat-list
-            role="list"
-            class="movie-list"
+
+        <cdk-virtual-scroll-viewport
+            itemSize="100"
+            class="viewport"
+            (scrolledIndexChange)="onScroll()"
+            #virtualScroll
         >
-            <cdk-virtual-scroll-viewport
-                itemSize="100"
-                class="viewport"
-                #virtualScroll
+            <div
+                *cdkVirtualFor="let movie of movies$ | async; trackBy: trackByFn"
+                class="grid-container movie-item"
             >
-                <mat-list-item
-                    *cdkVirtualFor="let movie of movies$ | async; trackBy: trackByFn"
-                    role="listitem"
-                    class="movie-item"
-                >
-                    <div class="grid-container movie-item-containter">
-                        <div class="movie-poster">
-                            <img
-                                [src]="movie.Poster"
-                                [alt]="movie.Title"
-                                (error)="onImageError($event)"
-                            />
-                        </div>
-                        <div class="movie-information">
-                            <span class="movie-title text-bold">{{ movie.Title }}</span>
-                            <br />
-                            <span class="movie-year">{{ movie.Year }}</span>
-                        </div>
-                    </div>
-                </mat-list-item>
-            </cdk-virtual-scroll-viewport>
-        </mat-list>
+                <div class="movie-poster">
+                    <img
+                        [src]="movie.Poster"
+                        [alt]="movie.Title"
+                        (error)="onImageError($event)"
+                    />
+                </div>
+                <div class="movie-information">
+                    <span class="movie-title text-bold">{{ movie.Title }}</span>
+                    <br />
+                    <span class="movie-year">{{ movie.Year }}</span>
+                </div>
+            </div>
+        </cdk-virtual-scroll-viewport>
     </div>
 
-    <div class="content-footer grid-container">
-        <div class="search-result-information">
-            @if ((movies$ | async)?.length) {
-            <span class="text-italic">Displaying {{ (movies$ | async)?.length }} of {{ (totalResults | async) }} results.</span>
-            }
-        </div>
+    <div class="content-footer">
+        @if (loading) {
+        <mat-spinner [diameter]="20"></mat-spinner>
+        }
 
-        <div class="button-container">
-            @if (hasMore$ | async) {
-            <button
-                mat-flat-button
-                (click)="onLoadMoreClick()"
-                [disabled]="loading$ | async"
-            >Load more</button>
-            }
-        </div>
+        @if ((movies$ | async)?.length) {
+        <span class="text-italic">Displaying {{ (movies$ | async)?.length }} of {{ (totalResults$ | async) }} results.</span>
+        }
     </div>
 </div>
