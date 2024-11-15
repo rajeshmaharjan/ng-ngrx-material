@@ -25,16 +25,20 @@ export class MoviesComponent implements OnInit {
   movies$: Observable<Movie[]> = this._store.select(selectSearchResults);
   searchHistory$: Observable<string[]> = this._store.select(selectSearchHistory);
   hasMore$: Observable<boolean> = this._store.select(selectHasMore);
-  totalResults: Observable<number> = this._store.select(selectTotalResults);
+  totalResults$: Observable<number> = this._store.select(selectTotalResults);
   currentPage$: Observable<number> = this._store.select(selectCurrentPage);
 
   public currentPage!: number;
+  public loading!: boolean;
+  public hasMore!: boolean;
 
   constructor(private _store: Store) { }
 
   ngOnInit(): void {
     this.searchHistory$.subscribe(history => this._options = history);
     this.currentPage$.subscribe(page => this.currentPage = page);
+    this.loading$.subscribe(loading => this.loading = loading);
+    this.hasMore$.subscribe(hasMore => this.hasMore = hasMore);
 
     this.filteredOptions = this.searchControl.valueChanges.pipe(
       startWith(''),
@@ -59,13 +63,20 @@ export class MoviesComponent implements OnInit {
     return index;
   }
 
+  public onScroll(): void {
+    if (this.loading) return;
+
+    if (!this.hasMore) return;
+
+    if (this.virtualScroll.measureScrollOffset('bottom') < 100) {
+      this._store.dispatch(searchMovies({ query: this.searchControl.value, page: this.currentPage + 1 }));
+    }
+  }
+
+
   public onImageError(event: Event) {
     const target = event.target as HTMLImageElement;
     target.src = 'https://placehold.co/300x450?text=Poster\\nNot\\nFound';
-  }
-
-  public onLoadMoreClick(): void {
-    this._store.dispatch(searchMovies({ query: this.searchControl.value, page: this.currentPage + 1 }));
   }
 
   private _filter(value: string): string[] {

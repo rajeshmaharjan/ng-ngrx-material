@@ -6,54 +6,44 @@
     border-radius: 10px;
 
     .content-body {
-        .movie-list {
-            .viewport {
-                height: 300px;
+        .viewport {
+            height: 300px;
 
-                .movie-item {
-                    height: 100px;
+            .movie-item {
+                height: 100px;
+                grid-template-columns: 75px auto;
 
-                    .movie-item-containter {
-                        margin-top: 10px;
-                        grid-template-columns: 75px auto;
+                .movie-poster {
+                    grid-column: 1;
+                    grid-row: 1;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
 
-                        .movie-poster {
-                            grid-column: 1;
-                            grid-row: 1;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-
-                            img {
-                                width: 65px;
-                            }
-                        }
-
-                        .movie-information {
-                            grid-column: 2;
-                            grid-row: 1;
-                            padding-top: 10px;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                        }
+                    img {
+                        width: 65px;
                     }
+                }
+
+                .movie-information {
+                    grid-column: 2;
+                    grid-row: 1;
+                    padding-top: 10px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
             }
         }
     }
 
     .content-footer {
+        margin-top: 20px;
+        height: 30px;
+        width: 100%;
+        display: inline-flex;
+        gap: 10px;
         align-items: center;
-
-        .search-result-information {
-            grid-column: 1;
-            grid-row: 1;
-        }
-
-        .button-container {
-            grid-column: 2;
-            grid-row: 1;
-            justify-self: end;
-        }
+        margin-top: 20px;
+        justify-content: end;
     }
 }
 
@@ -76,6 +66,4 @@
 
 .grid-container {
     display: grid;
-    gap: 10px;
-    padding: 10px;
 }
