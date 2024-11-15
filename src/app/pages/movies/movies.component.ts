@@ -59,6 +59,11 @@ export class MoviesComponent implements OnInit {
     return index;
   }
 
+  public onImageError(event: Event) {
+    const target = event.target as HTMLImageElement;
+    target.src = 'https://placehold.co/300x450?text=Poster\\nNot\\nFound';
+  }
+
   public onLoadMoreClick(): void {
     this._store.dispatch(searchMovies({ query: this.searchControl.value, page: this.currentPage + 1 }));
   }
